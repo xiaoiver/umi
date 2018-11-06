@@ -91,6 +91,7 @@ export default function(api) {
             port,
             base: service.config.base,
             webpackConfig: service.webpackConfig,
+            serverWebpackConfig: service.serverWebpackConfig,
             proxy: service.config.proxy || {},
             contentBase: './path-do-not-exists',
             _beforeServerWithApp(app) {
@@ -116,7 +117,15 @@ export default function(api) {
               startWatch();
             },
             onCompileDone({ isFirstCompile, stats }) {
-              service.__chunks = stats.compilation.chunks;
+              // use MultiStats which fulfills the same interface as stats
+              // https://webpack.js.org/api/node/#stats-object
+              if (stats.stats && Array.isArray(stats.stats)) {
+                // TODO: server chunks
+                service.__chunks = stats.stats[0].compilation.chunks;
+              } else {
+                service.__chunks = stats.compilation.chunks;
+              }
+
               service.applyPlugins('onDevCompileDone', {
                 args: {
                   isFirstCompile,

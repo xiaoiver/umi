@@ -1,7 +1,7 @@
 import getConfig from 'af-webpack/getConfig';
 import assert from 'assert';
 
-export default function(service) {
+export default function(service, options = {}) {
   const { config } = service;
 
   const afWebpackOpts = service.applyPlugins('modifyAFWebpackOpts', {
@@ -15,6 +15,9 @@ export default function(service) {
     `chainConfig should not supplied in modifyAFWebpackOpts`,
   );
   afWebpackOpts.chainConfig = webpackConfig => {
+    // add ssr flag on webpackChain config
+    webpackConfig.ssr = options.ssr;
+
     service.applyPlugins('chainWebpackConfig', {
       args: webpackConfig,
     });

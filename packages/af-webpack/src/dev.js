@@ -26,6 +26,7 @@ process.env.NODE_ENV = 'development';
 
 export default function dev({
   webpackConfig,
+  serverWebpackConfig,
   _beforeServerWithApp,
   beforeMiddlewares,
   afterMiddlewares,
@@ -45,7 +46,12 @@ export default function dev({
         return;
       }
 
-      const compiler = webpack(webpackConfig);
+      let compiler;
+      if (serverWebpackConfig) {
+        compiler = webpack([webpackConfig, serverWebpackConfig]);
+      } else {
+        compiler = webpack(webpackConfig);
+      }
 
       let isFirstCompile = true;
       const IS_CI = !!process.env.CI;

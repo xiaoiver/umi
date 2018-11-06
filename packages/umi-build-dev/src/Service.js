@@ -307,9 +307,16 @@ ${getCodeFrame(e, { cwd: this.cwd })}
     }
 
     const { fn, opts } = command;
+
     if (opts.webpack) {
       // webpack config
       this.webpackConfig = require('./getWebpackConfig').default(this);
+      if (args.ssr) {
+        // server entry config
+        this.serverWebpackConfig = require('./getWebpackConfig').default(this, {
+          ssr: true,
+        });
+      }
     }
 
     return fn(args);
